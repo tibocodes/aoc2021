@@ -1,10 +1,10 @@
 fn main() {
     // dbg!(numbers(INPUT));
     // dbg!(Grid::new(GRID_INPUT));
-    dbg!(Grid::new(GRID_INPUT).won(&vec![22, 13, 17, 11, 0]));
-    dbg!(Grid::new(GRID_INPUT).won(&vec![22, 13, 17, 11, 1]));
-    dbg!(Grid::new(GRID_INPUT).won(&vec![22, 8, 21, 6, 1]));
-    dbg!(Grid::new(GRID_INPUT).won(&vec![22, 9, 21, 6, 1]));
+    dbg!(Grid::new(GRID_INPUT).won(&[22, 13, 17, 11, 0]));
+    dbg!(Grid::new(GRID_INPUT).won(&[22, 13, 17, 11, 1]));
+    dbg!(Grid::new(GRID_INPUT).won(&[22, 8, 21, 6, 1]));
+    dbg!(Grid::new(GRID_INPUT).won(&[22, 9, 21, 6, 1]));
 }
 
 const INPUT: &str = "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
@@ -38,7 +38,7 @@ const GRID_INPUT: &str = "22 13 17 11  0
 fn numbers(input: &str) -> Vec<u32> {
     input
         .lines()
-        .nth(0)
+        .next()
         .unwrap()
         .split(',')
         .map(|e| e.parse().unwrap())
@@ -61,18 +61,17 @@ impl Grid {
             })
     }
 
-    fn won(&self, played_numbers: &Vec<u32>) -> bool {
-        self.won_horizontally(played_numbers)
-        // self.won_horizontally(played_numbers) || self.won_vertically(&played_numbers)
+    fn won(&self, played_numbers: &[u32]) -> bool {
+        self.won_horizontally(played_numbers) || self.won_vertically(played_numbers)
     }
 
-    fn won_horizontally(&self, played_numbers: &Vec<u32>) -> bool {
+    fn won_horizontally(&self, played_numbers: &[u32]) -> bool {
         self.numbers
             .windows(5)
             .any(|line| line.iter().all(|e| played_numbers.contains(e)))
     }
 
-    fn won_vertically(&self, played_numbers: &Vec<u32>) -> bool {
+    fn won_vertically(&self, played_numbers: &[u32]) -> bool {
         (0..=4).any(|start| {
             self.numbers
                 .iter()
@@ -89,13 +88,33 @@ mod tests {
 
     #[test]
     fn test_won_horizontally() {
-        assert_eq!(Grid::new(GRID_INPUT).won_horizontally(&vec![22, 13, 17, 11, 0]), true);
-        assert_eq!(Grid::new(GRID_INPUT).won_horizontally(&vec![22, 13, 17, 11, 1]), false);
+        assert_eq!(
+            Grid::new(GRID_INPUT).won_horizontally(&[22, 13, 17, 11, 0]),
+            true
+        );
+        assert_eq!(
+            Grid::new(GRID_INPUT).won_horizontally(&[22, 13, 17, 11, 1]),
+            false
+        );
     }
 
     #[test]
     fn test_won_vertically() {
-        assert_eq!(Grid::new(GRID_INPUT).won_vertically(&vec![22, 8, 21, 6, 1]), true);
-        assert_eq!(Grid::new(GRID_INPUT).won_vertically(&vec![22, 9, 21, 6, 1]), false);
+        assert_eq!(
+            Grid::new(GRID_INPUT).won_vertically(&[22, 8, 21, 6, 1]),
+            true
+        );
+        assert_eq!(
+            Grid::new(GRID_INPUT).won_vertically(&[22, 9, 21, 6, 1]),
+            false
+        );
+    }
+
+    #[test]
+    fn test_won() {
+        assert_eq!(Grid::new(GRID_INPUT).won(&[22, 13, 17, 11, 0]), true);
+        assert_eq!(Grid::new(GRID_INPUT).won(&[22, 13, 17, 11, 1]), false);
+        assert_eq!(Grid::new(GRID_INPUT).won(&[22, 8, 21, 6, 1]), true);
+        assert_eq!(Grid::new(GRID_INPUT).won(&[22, 9, 21, 6, 1]), false);
     }
 }
