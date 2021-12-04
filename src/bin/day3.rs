@@ -19,6 +19,9 @@ fn main() {
   dbg!(epsilon_rate(INPUT));
   dbg!(part_1(INPUT));
   dbg!(part_1(include_str!("../../inputs/day3")));
+  dbg!(co2_rate(INPUT));
+  dbg!(part_2(INPUT));
+  dbg!(part_2(include_str!("../../inputs/day3")));
 }
 
 pub fn part_1(input: &str) -> u32 {
@@ -71,6 +74,46 @@ fn epsilon_rate(input: &str) -> u32 {
   u32::from_str_radix(&binary_string, 2).unwrap()
 }
 
+pub fn part_2(input: &str) -> u32 {
+  co2_rate(input) * oxygen_rate(input)
+}
+
+fn co2_rate(input: &str) -> u32 {
+  let parsed_input = vectors(input);
+  let mut filtered_input = parsed_input.clone();
+  for index in 0..parsed_input.first().unwrap().len() - 1 {
+    filtered_input = filter_co2(filtered_input, index)
+  }
+  let binary_string = filtered_input.first().unwrap().iter()
+  .map( |elem| elem.to_string())
+  .collect::<Vec<String>>()
+  .join("");
+
+  u32::from_str_radix(&binary_string, 2).unwrap()
+}
+
+fn filter_co2(parsed_input: Vec<Vec<u32>>, index: usize) -> Vec<Vec<u32>> {
+  let mut most_common = parsed_input
+    .iter()
+    .fold(0, |acc, vector|
+      acc + vector[index]
+    );
+  if most_common as usize >= parsed_input.len() / 2 {
+    most_common = 1
+  } else {
+    most_common = 0
+  }
+  parsed_input
+  .clone()
+  .into_iter()
+  .filter(|elem| elem[index] == most_common)
+  .collect()
+}
+
+fn oxygen_rate(input: &str) -> u32 {
+  0
+}
+
 fn vectors(input: &str) -> Vec<Vec<u32>>{
   input
   .lines()
@@ -107,10 +150,15 @@ mod tests {
 // ";
 
     #[test]
-    fn exploration() {
+    fn test_part_1() {
       assert_eq!(part_1(INPUT), 198);
     }
     
+    #[test]
+    fn test_part_2() {
+      assert_eq!(part_2(INPUT), 230);
+    }
+
     #[test]
     fn test_add() {
       assert_eq!(add(vec![0, 1], &vec![1, 0]), vec![1, 1])
